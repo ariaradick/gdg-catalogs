@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gdg-catalogs"
+version = "0.0.1"
+authors = [
+  { name="Aria Radick", email="aria.radick@noaa.gov" },
+]
+description = "Base package for facilitating tools that rely on ESM data catalogs."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "polars",
+    "PyYAML"
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "GPL-3.0-or-later"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/ariaradick/gdg-catalogs"
+Issues = "https://github.com/ariaradick/gdg-catalogs/issues"
