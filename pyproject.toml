@@ -3,7 +3,7 @@ requires = ["hatchling >= 1.26"]
 build-backend = "hatchling.build"
 
 [project]
-name = "gdg-catalogs"
+name = "gdg_catalogs"
 version = "0.0.1"
 authors = [
   { name="Aria Radick", email="aria.radick@noaa.gov" },
@@ -25,3 +25,6 @@ license-files = ["LICEN[CS]E*"]
 [project.urls]
 Homepage = "https://github.com/ariaradick/gdg-catalogs"
 Issues = "https://github.com/ariaradick/gdg-catalogs/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gdg_catalogs"]
