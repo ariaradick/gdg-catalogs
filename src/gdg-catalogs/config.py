@@ -17,6 +17,7 @@ class Config:
     variable_column: str = 'variable_id'
     groupby_attrs: list[str] = []
     catalog_file: str = None
+    _auto_groups: bool = False
 
     def __init__(
         self,
@@ -51,21 +52,7 @@ class Config:
         # catalog is provided
         if self.catalog_file:
             if not self.groupby_attrs:
-                self.groupby_attrs = self._auto_groupby_attrs(self.catalog_file)
-
-    def _auto_groupby_attrs(
-        self,
-        catalog_path_csv,
-        skip_columns=[]
-    ):
-        df = pl.read_csv(catalog_path_csv)
-        skipCol = skip_columns.copy()
-        skipCol.append(self.path_column)
-        grpCols = []
-        for c in df.columns:
-            if c not in skipCol and df.n_unique(pl.col(c)) > 1:
-                grpCols.append(c)
-        return grpCols
+                self._auto_groups = True
 
     def _load_json_config(
         self,
