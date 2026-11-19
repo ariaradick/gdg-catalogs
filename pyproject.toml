@@ -13,7 +13,7 @@ readme = "README.md"
 requires-python = ">=3.9"
 dependencies = [
     "polars",
-    "PyYAML"
+    "validators"
 ]
 classifiers = [
     "Programming Language :: Python :: 3",
