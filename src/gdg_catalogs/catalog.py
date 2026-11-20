@@ -1,7 +1,8 @@
-import polars as pl
 from pathlib import Path
+import yaml
 from .config import Config
 from .utils import _to_list
+import polars as pl
 
 class Catalog(Config):
     df: pl.DataFrame
@@ -22,7 +23,7 @@ class Catalog(Config):
         )
         self.df = pl.read_csv(self.catalog_file)
 
-        if filter_by:
+        if filter_by is not None:
             self.df = self._filter(filter_by)
 
         if self._auto_groups:
@@ -52,8 +53,35 @@ class Catalog(Config):
         self,
         filter_by=None
     ):
-        if filter_by:
+        if filter_by is not None:
             df = self._filter(filter_by)
         else:
             df = self.df
         return df.get_column(self.pathColumn).to_list()
+
+def _load_yaml(config_file: str) -> dict:
+    with open(config_file, 'r') as f:
+        yaml_conf = yaml.safe_load(f)
+    config_dict = {
+        "catalog_file": yaml_conf.get("catalog_file", None),
+        "groupby_attrs": yaml_conf.get("groupby_attrs", None),
+        "variable_column": yaml_conf.get("variable_column", None),
+        "path_column": yaml_conf.get("path_column", None),
+        "filter_by": yaml_conf.get("filter_by", None)
+    }
+    return config_dict
+
+def from_yaml(
+    path_to_yaml,
+    **kwargs
+):
+    config_dict = _load_yaml(path_to_yaml)
+    for k,v in kwargs.items():
+        if k in config_dict.keys():
+            config_dict[k] = v
+    catalog_file = config_dict["catalog_file"]
+    del config_dict["catalog_file"]
+    return Catalog(
+        catalog_file,
+        **config_dict
+    )
