@@ -3,7 +3,7 @@ from pathlib import Path
 import validators
 import polars as pl
 
-def _load_json(path):
+def _load_json(path: str) -> dict:
     if validators.url(path):
         with urllib.request.urlopen(path) as url:
             json_config = json.loads(url.read().decode())
@@ -13,20 +13,20 @@ def _load_json(path):
     return json_config
 
 class Config:
-    path_column: str = 'path'
-    variable_column: str = 'variable_id'
-    groupby_attrs: list[str] = []
-    catalog_file: str = None
+    path_column: str | None = 'path'
+    variable_column: str | None = 'variable_id'
+    groupby_attrs: list[str] | None = None
+    catalog_file: str | None = None
     _auto_groups: bool = False
 
     def __init__(
         self,
-        catalog_path=None,
-        variable_column=None,
-        path_column=None,
-        groupby_attrs=None
+        catalog_path: str | None = None,
+        variable_column: str | None = None,
+        path_column: str | None = None,
+        groupby_attrs: list[str] | None = None
     ):
-        if catalog_path:
+        if catalog_path is not None:
             catPath = Path(catalog_path).resolve()
             if catPath.suffix == '.json':
                 self._load_json_config(catalog_path)
@@ -39,29 +39,29 @@ class Config:
             elif catPath.suffix == '.csv':
                 self.catalog_file = catalog_path
 
-        if variable_column:
-            self.variable_column = variable_column
+        if variable_column is not None:
+            self.variable_column = str(variable_column)
 
-        if path_column:
-            self.path_column = path_column
+        if path_column is not None:
+            self.path_column = str(path_column)
 
-        if groupby_attrs:
+        if groupby_attrs is not None:
             self.groupby_attrs = groupby_attrs
 
         # only automatically set groupby_attrs if not supplied _and_ if a csv
         # catalog is provided
-        if self.catalog_file:
-            if not self.groupby_attrs:
+        if self.catalog_file is not None:
+            if self.groupby_attrs is None:
                 self._auto_groups = True
 
     def _load_json_config(
         self,
-        json_path
-    ):
+        json_path: str
+    ) -> None:
         self._spec = _load_json(json_path)
         self.path_column = self._get_path_col()
         aggs = self._get_aggs()
-        if aggs:
+        if aggs is not None:
             self.variable_column = aggs["variable_column_name"]
             if "groupby_attrs" in aggs.keys():
                 self.groupby_attrs = aggs["groupby_attrs"]
