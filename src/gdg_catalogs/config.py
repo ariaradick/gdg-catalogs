@@ -34,8 +34,6 @@ class Config:
                 self._load_json_config(catalog_path)
                 spec_cat_path = str(self._spec["catalog_file"])
                 self.catalog_file = str(catPath.parent / spec_cat_path)
-                else:
-                    self.catalog_file = spec_cat_path
             elif catPath.suffix == '.csv':
                 self.catalog_file = catalog_path
 
