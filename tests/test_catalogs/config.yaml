@@ -1,0 +1,6 @@
+catalog_file: catalog.json
+groupby_attrs: ["experiment_id", "realm", "frequency", "var_id"]
+variable_column: "var_id"
+path_column: "filepath"
+filter_by:
+  experiment_id: "SPEAR_c192_o1_Hist_AllForc_IC1921_K50"
