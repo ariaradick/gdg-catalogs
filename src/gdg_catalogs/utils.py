@@ -1,3 +1,7 @@
+import validators
+from pathlib import Path
+from urlpath import URL
+
 def _to_list(a):
     if type(a) == str:
         return [a]
@@ -21,3 +25,9 @@ def _convert_time(gfdl_timestamp):
 
 def _convert_timerange(gfdl_timerange):
     return [_convert_time(t) for t in gfdl_timerange.split('-')]
+
+def parse_path(path: str) -> URL | Path:
+    if validators.url(path):
+        return URL(path).resolve()
+    else:
+        return Path(path).resolve()
