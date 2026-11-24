@@ -1,7 +1,7 @@
 from pathlib import Path
 import yaml
 from .config import Config
-from .utils import _to_list
+from .utils import _to_list, parse_path
 import polars as pl
 
 class Catalog(Config):
@@ -59,11 +59,27 @@ class Catalog(Config):
             df = self.df
         return df.get_column(self.pathColumn).to_list()
 
-def _load_yaml(config_file: str) -> dict:
-    with open(config_file, 'r') as f:
-        yaml_conf = yaml.safe_load(f)
+def _open_yaml(config_file: str):
+    if validators.url(path):
+        with urllib.request.urlopen(path) as url:
+            yaml_conf = yaml.safe_load(url.read().decode())
+    else:
+        with open(path) as f:
+            yaml_conf = yaml.safe_load(f)
+    return yaml_conf
+
+def _parse_yaml(config_file: str) -> dict:
+    yaml_conf = _open_yaml(config_file)
+
+    catalog_file = yaml_conf.get("catalog_file", None)
+    if catalog_file is not None:
+        yamlPath = parse_path(config_file)
+        full_catalog_file_path = str((yamlPath.parent / catalog_file).resolve())
+    else:
+        full_catalog_file_path = None
+
     config_dict = {
-        "catalog_file": yaml_conf.get("catalog_file", None),
+        "catalog_file": full_catalog_file_path,
         "groupby_attrs": yaml_conf.get("groupby_attrs", None),
         "variable_column": yaml_conf.get("variable_column", None),
         "path_column": yaml_conf.get("path_column", None),
