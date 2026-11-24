@@ -2,6 +2,7 @@ import urllib.request, json
 from pathlib import Path
 import validators
 import polars as pl
+from .utils import parse_path
 
 def _load_json(path: str) -> dict:
     if validators.url(path):
@@ -18,6 +19,7 @@ class Config:
     groupby_attrs: list[str] | None = None
     catalog_file: str | None = None
     _auto_groups: bool = False
+    _spec: dict | None = None
 
     def __init__(
         self,
@@ -27,13 +29,11 @@ class Config:
         groupby_attrs: list[str] | None = None
     ):
         if catalog_path is not None:
-            catPath = Path(catalog_path).resolve()
+            catPath = parse_path(catalog_path)
             if catPath.suffix == '.json':
                 self._load_json_config(catalog_path)
-                spec_cat_path = self._spec["catalog_file"]
-                if spec_cat_path.startswith('./'):
-                    self.catalog_file = '/'.join(catalog_path.split('/')[:-1])+\
-                                        spec_cat_path[1:]
+                spec_cat_path = str(self._spec["catalog_file"])
+                self.catalog_file = str(catPath.parent / spec_cat_path)
                 else:
                     self.catalog_file = spec_cat_path
             elif catPath.suffix == '.csv':
@@ -72,5 +72,5 @@ class Config:
         else:
             return None
 
-    def _get_path_col(self):
+    def _get_path_col(self) -> str:
         return self._spec["assets"]["column_name"]
