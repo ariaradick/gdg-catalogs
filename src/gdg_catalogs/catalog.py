@@ -3,6 +3,7 @@ import yaml
 from .config import Config
 from .utils import _to_list, parse_path
 import polars as pl
+import validators
 
 class Catalog(Config):
     df: pl.DataFrame
@@ -60,11 +61,11 @@ class Catalog(Config):
         return df.get_column(self.pathColumn).to_list()
 
 def _open_yaml(config_file: str):
-    if validators.url(path):
+    if validators.url(config_file):
         with urllib.request.urlopen(path) as url:
             yaml_conf = yaml.safe_load(url.read().decode())
     else:
-        with open(path) as f:
+        with open(config_file) as f:
             yaml_conf = yaml.safe_load(f)
     return yaml_conf
 
@@ -91,7 +92,7 @@ def from_yaml(
     path_to_yaml,
     **kwargs
 ):
-    config_dict = _load_yaml(path_to_yaml)
+    config_dict = _parse_yaml(path_to_yaml)
     for k,v in kwargs.items():
         if k in config_dict.keys():
             config_dict[k] = v
